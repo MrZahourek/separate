@@ -1,0 +1,63 @@
+/* --- other setup --- */
+body, html {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+/* --- canvas and overlay --- */
+
+#container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+}
+
+#overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+    pointer-events: none; /* <-- this causes the overlay to ignore mouse events and pass it to canvas */
+
+    /* CSS variables */
+    --Xpos: 50vw;
+    --Ypos: 50vh;
+}
+
+#main {
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 100%;
+
+    z-index: 1;
+    background: antiquewhite;
+}
+
+/* --- effects --- */
+
+#overlay.flashlight::before {
+    content: "";
+
+    width: 100%;
+    height: 100%;
+
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+
+    /* The radial-gradient: transparent at center, black at edges; variables set the position */
+    background: radial-gradient(
+            circle 8em at var(--Xpos) var(--Ypos),
+            rgba(0,0,0,0),
+            rgba(0,0,0,0.85) 70%,
+            rgba(0,0,0,1) 90%
+    );
+}
