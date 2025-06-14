@@ -1,13 +1,19 @@
 /// --- Visitors
-
-
 import * as Asset from "./assetManager.js";
 import * as Hitbox from "./hitboxManager.js";
 import {canvas, drawCanvas} from "./canvasManager.js";
-import {HITBOX_ORIGINAL_SCREEN, VISITOR_IMAGE_DESIRED_SIZE} from "../res/visitorData.js";
+import {
+    HITBOX_ORIGINAL_SCREEN, VISITOR_ABILITIES,
+    VISITOR_IMAGE_DESIRED_SIZE,
+    VISITOR_SPAWN_PLACES,
+    VISITORS_REQUIREMENTS
+} from "../res/visitorData.js";
 import * as Effect from "./effectManager.js";
 import {allRooms, getCurrentRoom, setCurrentRoom} from "./roomManager.js";
 import {_rand, _removeItem} from "./timeManager.js";
+
+export let activeVisitors = [];
+export let inactiveVisitors = [];
 
 class Visitor {
     constructor(visitorName) {
@@ -18,6 +24,10 @@ class Visitor {
         this.inactiveTicks = 0;
         this.spawnAI = {cur: _rand(3, 5), min: 3, max: 5};
         this.priority = 0;
+        this.requirements = VISITORS_REQUIREMENTS.get(visitorName);
+        this.spawnPlaces = VISITOR_SPAWN_PLACES.get(visitorName);
+        this.spawnCounter = 0;
+        this.ability = VISITOR_ABILITIES.get(visitorName);
 
         // -- move AI
         this.activeSeconds = 0;
@@ -47,7 +57,7 @@ class Visitor {
 
         // update sound
         window.dispatchEvent(
-            new CustomEvent("movement sound", {
+            new CustomEvent("sound", {
                 detail: {
                     room: toRoom,
                     cause: "movement"
@@ -67,7 +77,10 @@ class Visitor {
 
     kill() {}
 
-    spawn(inRoom) {}
+    spawn(inRoom) {
+        this.inRoom = inRoom;
+        this.onSpawn();
+    }
 
     AI() {
         if (!this.isActive) {
@@ -98,6 +111,13 @@ class Visitor {
 
                 if (pickedIndex === possibleRooms.length) {
                     this.fails++;
+
+                    // fail bonus
+                    if (this.fails >= 3) {
+                        this.moveAI.min += 2;
+                        this.moveAI.max += 2;
+                        this.moveAI.cur = _rand(this.moveAI.min, this.moveAI.max);
+                    }
                 }
                 else {
                     // get the rooms
@@ -109,7 +129,7 @@ class Visitor {
                         weights.push(allRooms.get(possibleRooms[i]).sound);
 
                         if (pickedIndex === i) {
-                            weights[i] += 10;
+                            weights[i] += 15;
                         }
                     }
 
@@ -129,6 +149,12 @@ class Visitor {
                             break; // exit for loop
                         }
                     }
+
+                    // reset values
+                    this.fails = 0;
+                    this.moveAI.min = 3;
+                    this.moveAI.max = 5;
+                    this.moveAI.cur = _rand(this.moveAI.min, this.moveAI.max);
                 }
 
                 this.activeSeconds = 0;

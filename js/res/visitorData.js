@@ -9,3 +9,23 @@ export const VISITOR_IMAGE_DESIRED_SIZE = {
 export const HITBOX_ORIGINAL_SCREEN = {
     angel: {width: 1920, height: 919}
 };
+
+export const ITEMS_IN_ROOM = new Map([
+    ["hall 1", []],
+    ["bathroom", []],
+    ["living room", []],
+    ["kitchen", []],
+    ["hall 2", []],
+    ["office", []],
+    ["master bedroom", []],
+    ["kid bedroom", []],
+    ["death", []]
+]);
+
+export const VISITORS_REQUIREMENTS = new Map();
+
+export const VISITOR_SPAWN_PLACES = new Map();
+
+export const VISITOR_ABILITIES = new Map();
+
+export const ROOM_FAVORITES = new Map();
