@@ -6,5 +6,6 @@ export const ROOM_BACKGROUNDS = new Map([
     ["hall 2", "images/hall 2.jpg"],
     ["office", "images/office.jpg"],
     ["master bedroom", "images/master bedroom.jpg"],
-    ["kid bedroom", "images/kid bedroom.jpg"]
+    ["kid bedroom", "images/kid bedroom.jpg"],
+    ["death", "images/death.jpg"]
 ]);

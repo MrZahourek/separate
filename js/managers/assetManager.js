@@ -40,11 +40,13 @@ class ImageAsset {
         try {
             await this.load()
                 .then(() => {
-                    let hRatio = canvas.width  / this.asset.width    ;
-                    let vRatio =  canvas.height / this.asset.height  ;
-                    let ratio  = Math.min ( hRatio, vRatio );
+                    console.warn("offset: " + offsetX + " " + offsetY);
+                    console.warn("canvas: " + canvas.width * 0.05 + " " + canvas.height * 0.05);
+                    console.warn("width: " + 1*canvas.width);
+                    console.warn("height: " + fracH*canvas.height);
+                    console.warn(`drawn at: ${canvas.width * 0.05 + offsetX} ... ${canvas.height * 0.05 + offsetY}`);
 
-                    ctx.drawImage(this.asset, 0,0, this.asset.width, this.asset.height, offsetX , offsetY, fracW*canvas.width, fracH*canvas.height);
+                    ctx.drawImage(this.asset, 0,0, this.asset.width, this.asset.height, (canvas.width * 0.05) + offsetX , (canvas.height * 0.05) + offsetY, fracW*canvas.width, fracH*canvas.height);
                 });
         }
         catch (err) {
@@ -60,6 +62,7 @@ class AudioAsset {
         this.src = src;
         this.isLoaded = false;
         this.isLooped = false;
+        this.isPlaying = false;
     }
 
     load() {
@@ -78,17 +81,49 @@ class AudioAsset {
         });
     }
 
-    end() {}
+    end() {
+        if (this.isPlaying) {
+            this.audio.pause();
+
+            if (this.isLooped) {
+                this.audio.removeEventListener("ended", () =>  this.audio.play() );
+                this.isLooped = false;
+            }
+
+            this.isPlaying = false;
+        }
+    }
     async play() {
+        if (this.isPlaying) { return; }
         try {
-            await this.load().then(() => {this.audio.play();});
+            await this.load().then(() => {
+                this.audio.play();
+                this.isPlaying = true;
+            });
+
+            this.audio.onended =  () => {
+                this.isPlaying = false
+            };
         }
         catch (err) {
             console.error(`error while loading audio asset: ${err}`);
         }
     }
 
-    playLooped() {}
+    async playLooped() {
+        if (this.isPlaying) { return; }
+        try {
+            await this.load().then(() => {
+                this.audio.play();
+                this.audio.addEventListener("ended", () =>  this.audio.play() );
+                this.isLooped = true;
+                this.isPlaying = true;
+            });
+        }
+        catch (err) {
+            console.error(`error while loading audio asset: ${err}`);
+        }
+    }
 }
 
 export {

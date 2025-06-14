@@ -1,3 +1,19 @@
+/* --- fonts --- */
+@font-face {
+    font-family: vhs;
+    src: url("/css/VT323-Regular.ttf");
+}
+
+/* --- animations --- */
+@keyframes textFlicker {
+    from {
+        text-shadow: 1px 0 0 #ea36af, -2px 0 0 #75fa69;
+    }
+    to {
+        text-shadow: 2px 0.5px 2px #ea36af, -1px -0.5px 2px #75fa69;
+    }
+}
+
 /* --- other setup --- */
 body, html {
     margin: 0;
@@ -42,6 +58,9 @@ body, html {
 }
 
 /* --- effects --- */
+.hidden {
+    display: none;
+}
 
 #overlay.flashlight::before {
     content: "";
@@ -60,4 +79,29 @@ body, html {
             rgba(0,0,0,0.85) 70%,
             rgba(0,0,0,1) 90%
     );
+}
+
+#hoverName {
+    position: absolute;
+    z-index: 10;
+
+    --TextXpos: 0;
+    --TextYpos: 0;
+
+    top: var(--TextYpos);
+    left: var(--TextXpos);
+
+    padding: 3px 5px 5px 10px;
+
+    background: #111;
+    color: #ffab00;
+
+    text-shadow: 0.06rem 0 0.06rem #f20000, -0.125rem 0 0.06rem #f20000;
+    border-radius: 5px;
+
+    letter-spacing: 3px;
+    font-size: 25px;
+    font-family: vhs, monospace;
+
+    animation: textFlicker 0.01s infinite alternate;
 }

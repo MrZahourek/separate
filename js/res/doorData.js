@@ -6,7 +6,20 @@ export const DOORS_IN_ROOM = new Map([
     ["hall 2", [12, 13, 20]],
     ["office", [14, 15]],
     ["master bedroom", [16, 17]],
-    ["kid bedroom", [19, 18]]
+    ["kid bedroom", [19, 18]],
+    ["death", []]
+]);
+
+export const CLOSETS_IN_ROOM = new Map([
+    ["hall 1", []],
+    ["bathroom", [1]],
+    ["living room", []],
+    ["kitchen", [2, 3]],
+    ["hall 2", []],
+    ["office", [4]],
+    ["master bedroom", [5, 6]],
+    ["kid bedroom", [7, 8]],
+    ["death", []]
 ]);
 
 /// connections
@@ -59,3 +72,16 @@ export const DOOR_COORDINATES = {
 
 /// data for scaling
 export const ORIGINAL_SCREEN_SIZE = {width: 1920, height: 919};
+
+
+export const ROOMS_AROUND = new Map([
+    ["hall 1", ["bathroom", "kitchen", "living room"]],
+    ["bathroom", ["hall 1", "living room"]],
+    ["living room", ["bathroom", "hall 1", "kitchen", "hall 2"]],
+    ["kitchen", ["hall 1", " living room"]],
+    ["hall 2", ["office", "kid bedroom", "living room"]],
+    ["office", ["hall 2", "master bedroom"]],
+    ["master bedroom", ["office", "kid bedroom"]],
+    ["kid bedroom", ["hall 2", "master bedroom"]],
+    ["death", []]
+]);

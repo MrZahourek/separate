@@ -32,6 +32,40 @@ class  Flashlight {
     }
 }
 
+class HoverName {
+    constructor() {
+        this.active = false;
+    }
+
+    handler(e) {
+        document.getElementById("hoverName").style.setProperty("--TextXpos", e.clientX + 10 + "px");
+        document.getElementById("hoverName").style.setProperty("--TextYpos", e.clientY + 10 + "px");
+    }
+
+    enable( roomName ) {
+        if (!this.active) {
+            this.active = true;
+            document.getElementById("hoverName").innerText = roomName;
+            document.addEventListener("mousemove", this.handler);
+            document.getElementById("hoverName").classList.remove("hidden");
+        }
+    }
+
+    disable() {
+        if (this.active) {
+            document.getElementById("hoverName").classList.add("hidden");
+
+            document.removeEventListener("mousemove", this.handler);
+
+            this.active = false;
+
+            document.getElementById("hoverName").style.removeProperty("--TextXpos");
+            document.getElementById("hoverName").style.removeProperty("--TextYpos");
+        }
+    }
+}
+
 export {
-    Flashlight as flashlight
+    Flashlight as flashlight,
+    HoverName as hoverName
 };

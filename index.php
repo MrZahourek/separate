@@ -18,6 +18,7 @@
     <div id="overlay"></div>
 </div>
 
+<span id="hoverName" class="hidden"> Name </span>
 
 <script type="module" src="js/main.js"></script>
 </body>
