@@ -14,9 +14,12 @@ export function _removeItem(array, value) {
     }
 }
 
-export function _getTicks(n) {
+export function _getTicks(s) {
     // base tick is 5000 ms but there needs to be jitter so not everything is run at the same time thus preventing waves of visitors
-
+    if (_rand(0, 1) === 0) {
+        return 5000 * s - _rand(0, 750);
+    }
+    return 5000 * s + _rand(0, 750);
 }
 export class TimeManager {
     constructor() {

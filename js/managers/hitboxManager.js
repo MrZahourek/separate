@@ -108,7 +108,7 @@ class ClosetHitbox {
         this.state = "closed";
 
         // --- assets
-        this.clickAudio = null;
+        this.clickAudio = new Asset.audio("audio/closet.mp3");
     }
 }
 

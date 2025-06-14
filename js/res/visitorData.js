@@ -18,14 +18,52 @@ export const ITEMS_IN_ROOM = new Map([
     ["hall 2", []],
     ["office", []],
     ["master bedroom", []],
-    ["kid bedroom", []],
-    ["death", []]
+    ["kid bedroom", []]
 ]);
 
-export const VISITORS_REQUIREMENTS = new Map();
+export const ROOM_FAVORITES = new Map([
+    ["hall 1", "doorman"],
+    ["bathroom", "hunter"],
+    ["living room", "horde"],
+    ["kitchen", "angel"],
+    ["hall 2", "reanimation"],
+    ["office", "hollow"],
+    ["master bedroom", "hollow"],
+    ["kid bedroom", "jester"]
+]);
 
-export const VISITOR_SPAWN_PLACES = new Map();
+export const VISITORS_REQUIREMENTS = new Map([
+    ["angel", []],
+    ["hollow", []],
+    ["hunter", []],
+    ["doorman", []],
+    ["jester", []],
+    ["jester clone", []],
+    ["horde", []],
+    ["horde heart", []],
+    ["reanimation", []]
+]);
 
-export const VISITOR_ABILITIES = new Map();
+export const VISITOR_SPAWN_PLACES = new Map([
+    ["angel", []],
+    ["hollow", []],
+    ["hunter", []],
+    ["doorman", []],
+    ["jester", []],
+    ["jester clone", []],
+    ["horde", []],
+    ["horde heart", []],
+    ["reanimation", []]
+]);
 
-export const ROOM_FAVORITES = new Map();
+export const VISITOR_ABILITIES = new Map([
+    ["angel", []],
+    ["hollow", []],
+    ["hunter", []],
+    ["doorman", []],
+    ["jester", []],
+    ["jester clone", []],
+    ["horde", []],
+    ["horde heart", []],
+    ["reanimation", []]
+]);

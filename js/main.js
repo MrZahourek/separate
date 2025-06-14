@@ -5,14 +5,15 @@
 import {canvas, ctx, drawCanvas} from "./managers/canvasManager.js";
 import {allRooms, Room} from "./managers/roomManager.js";
 import {setCurrentRoom, getCurrentRoom} from "./managers/roomManager.js";
-import {clickHandler, hoverHandler, position} from "./managers/hitboxManager.js";
+import {clickHandler, hoverHandler, position, visitor} from "./managers/hitboxManager.js";
 import {allVisitors} from "./managers/visitorManager.js";
 import * as Visitor from "./managers/visitorManager.js";
 import * as Asset from "./managers/assetManager.js";
+import {_getTicks, TimeManager} from "./managers/timeManager.js";
 
 document.addEventListener("DOMContentLoaded", async () => {
     // 1) rooms
-    const roomName = new Set(["hall 1", "bathroom", "living room", "kitchen", "hall 2", "office", "master bedroom", "kid bedroom", "death"]);
+    const roomName = new Set(["hall 1", "bathroom", "living room", "kitchen", "hall 2", "office", "master bedroom", "kid bedroom"]);
     for ( let name of roomName ) {
         // set rooms
         allRooms.set(name, new Room(name));
@@ -23,15 +24,25 @@ document.addEventListener("DOMContentLoaded", async () => {
         for (let door of allRooms.get(name).doors) {
             await door.clickAudio.load();
         }
+
+        for (let closet of allRooms.get(name).closets) {
+            await closet.clickAudio.load();
+        }
+
+        // trigger AI
+        new TimeManager().setInterval(allRooms.get(name).AI.bind(allRooms.get(name)), _getTicks(1));
     }
 
     setCurrentRoom( allRooms.get("office") );
     // 2) visitors
+    // declare visitors
     allVisitors.set("angel", new Visitor.angel())
     allVisitors.set("doorman", new Visitor.doorman());
 
-    allRooms.get("kitchen").occupiedBy.push( allVisitors.get("angel") );
-    allRooms.get("hall 1").occupiedBy.push( allVisitors.get("doorman") );
+    // trigger AI
+    allVisitors.forEach(visitor => {
+        new TimeManager().setInterval(visitor.AI.bind(visitor), _getTicks(1));
+    })
 
 
     // 3) canvas setup

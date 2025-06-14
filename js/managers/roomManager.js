@@ -15,27 +15,28 @@ export class Room {
         this.name = roomName;
 
         /// -- assets and hitboxes
-        this.doors = DOORS_IN_ROOM.get(roomName).map(id => new Hitbox.door(id));
+        this.doors =   DOORS_IN_ROOM.get(roomName).map(id => new Hitbox.door(id));
         this.closets = CLOSETS_IN_ROOM.get(roomName).map(id => new Hitbox.closet(id));
 
         this.background = new Asset.image( ROOM_BACKGROUNDS.get(roomName) );
 
         /// -- AI
-        this.occupiedBy = [];
+        this.occupiedBy =      [];
         this.spawnedVisitors = [];
-        this.items = ITEMS_IN_ROOM.get(roomName);
-        this.favorite = ROOM_FAVORITES.get(roomName);
+        this.items =           ITEMS_IN_ROOM.get(roomName);
+        this.favorite =        ROOM_FAVORITES.get(roomName);
 
-        this.ticks = 0;
+        this.ticks =   0;
         this.status = "active";
-        this.heat = 0;
+        this.heat =   0;
+        this.failed = 0;
 
-        this.sleep = {lastSleepTick: 0, min: 0, max: 0};
-        this.increase = {cur: 0, min: 0, max: 0};
-        this.threshold = {cur: 0, min: 0, max: 0};
+        this.increase =  { cur: 0, min: 1, max: 3 };
+        this.threshold = { cur: 0, min: 25, max: 75 };
+        this.sleep =     { lastSleepTick: 0, min: 2, max: 6 };
 
         this.roomsAround = ROOMS_AROUND.get(roomName);
-        this.sound = 0;
+        this.sound =       0;
     }
 
     /// ────────────────── onBlock - when room spawns room blocker visitor
@@ -338,7 +339,6 @@ export class Closet {
         // -- assets & hitboxes
         this.closedImg = new Asset.image();
         this.openImg = new Asset.image();
-        this.visitorInside = null;
 
         this.state = "closed";
 

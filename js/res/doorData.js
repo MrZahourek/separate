@@ -6,8 +6,7 @@ export const DOORS_IN_ROOM = new Map([
     ["hall 2", [12, 13, 20]],
     ["office", [14, 15]],
     ["master bedroom", [16, 17]],
-    ["kid bedroom", [19, 18]],
-    ["death", []]
+    ["kid bedroom", [19, 18]]
 ]);
 
 export const CLOSETS_IN_ROOM = new Map([
@@ -18,8 +17,7 @@ export const CLOSETS_IN_ROOM = new Map([
     ["hall 2", []],
     ["office", [4]],
     ["master bedroom", [5, 6]],
-    ["kid bedroom", [7, 8]],
-    ["death", []]
+    ["kid bedroom", [7, 8]]
 ]);
 
 /// connections
@@ -82,6 +80,5 @@ export const ROOMS_AROUND = new Map([
     ["hall 2", ["office", "kid bedroom", "living room"]],
     ["office", ["hall 2", "master bedroom"]],
     ["master bedroom", ["office", "kid bedroom"]],
-    ["kid bedroom", ["hall 2", "master bedroom"]],
-    ["death", []]
+    ["kid bedroom", ["hall 2", "master bedroom"]]
 ]);

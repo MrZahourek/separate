@@ -83,6 +83,7 @@ class Visitor {
     }
 
     AI() {
+        console.warn(`[${this.name}] AI started`);
         if (!this.isActive) {
             this.inactiveTicks++;
             this.priority = this.inactiveTicks + (this.spawnAI.cur * 3);
@@ -261,10 +262,7 @@ class Doorman extends Visitor{
 
     onSpawn() {}
 
-    onSameRoom() {
-        setCurrentRoom(allRooms.get("death"));
-        drawCanvas();
-    }
+    onSameRoom() {}
 }
 
 class Hunter extends Visitor{
