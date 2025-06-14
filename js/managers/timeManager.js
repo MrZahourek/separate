@@ -7,6 +7,13 @@ export function _rand(min, max) {
     return Math.floor(Math.random() * (max - min)) + min;
 }
 
+export function _removeItem(array, value) {
+    const index = array.indexOf(value);
+    if (index > -1) { // only splice array when item is found
+        array.splice(index, 1); // 2nd parameter means remove one item only
+    }
+}
+
 export function _getTicks(n) {
     // base tick is 5000 ms but there needs to be jitter so not everything is run at the same time thus preventing waves of visitors
 

@@ -21,6 +21,7 @@ export class Room {
         this.occupiedBy = [];
 
         this.roomsAround = ROOMS_AROUND.get(roomName);
+        this.sound = 0;
     }
 }
 

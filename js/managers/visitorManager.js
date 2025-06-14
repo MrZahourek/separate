@@ -3,18 +3,11 @@
 
 import * as Asset from "./assetManager.js";
 import * as Hitbox from "./hitboxManager.js";
-import {canvas, ctx, drawCanvas} from "./canvasManager.js";
+import {canvas, drawCanvas} from "./canvasManager.js";
 import {HITBOX_ORIGINAL_SCREEN, VISITOR_IMAGE_DESIRED_SIZE} from "../res/visitorData.js";
 import * as Effect from "./effectManager.js";
 import {allRooms, getCurrentRoom, setCurrentRoom} from "./roomManager.js";
-import {_rand} from "./timeManager.js";
-
-function _removeItem(array, value) {
-    const index = array.indexOf(value);
-    if (index > -1) { // only splice array when item is found
-        array.splice(index, 1); // 2nd parameter means remove one item only
-    }
-}
+import {_rand, _removeItem} from "./timeManager.js";
 
 class Visitor {
     constructor(visitorName) {
@@ -32,6 +25,50 @@ class Visitor {
         this.fails = 0;
         this.inRoom = null;
     }
+
+    onMove() {}
+
+    onSpawn() {}
+
+    onDeath() {}
+
+    move(toRoom) {
+        // inform about movement
+        // inform rooms
+        window.dispatchEvent(
+            new CustomEvent("visitor movement", {
+                detail: {
+                    from: this.inRoom,
+                    to: toRoom,
+                    visitor: this
+                }
+            }),
+        );
+
+        // update sound
+        window.dispatchEvent(
+            new CustomEvent("movement sound", {
+                detail: {
+                    room: toRoom,
+                    cause: "movement"
+                }
+            }),
+        );
+
+        // change room
+        this.inRoom = toRoom;
+
+        // trigger onMove
+        this.onMove();
+
+    }
+
+    despawn() {}
+
+    kill() {}
+
+    spawn(inRoom) {}
+
     AI() {
         if (!this.isActive) {
             this.inactiveTicks++;
@@ -46,7 +83,7 @@ class Visitor {
         }
 
         console.info(
-            `AI report from ${this.name}: inactive ticks: ${this.inactiveTicks} AI: ${this.AIvalue} priority: ${this.priority}`
+            `AI report from ${this.name}: inactive ticks: ${this.inactiveTicks} AI: ${this.spawnAI.cur} priority: ${this.priority}`
         );
     }
 
@@ -64,10 +101,34 @@ class Visitor {
                 }
                 else {
                     // get the rooms
+                    let rooms = [];
+                    let weights = [];
+
+                    for (let i = 0; i < possibleRooms.length; i++) {
+                        rooms.push(allRooms.get(possibleRooms[i]));
+                        weights.push(allRooms.get(possibleRooms[i]).sound);
+
+                        if (pickedIndex === i) {
+                            weights[i] += 10;
+                        }
+                    }
 
                     // pick random + weigh based on sound
+                    let sum = weights.reduce((previousValue, currentValue) => previousValue + currentValue, 0); // this gets total value of the sounds
+                    const roll = Math.floor(Math.random() * sum); // get a random value from the range of total sound
 
-                    // trigger move method, that triggers onMove method - this way visitors can do their actions when they move but they all move the same
+                    for(let i = 0; i < rooms.length; i++) {
+                        sum -= weights[i];
+                        // since we decrease sum by the amount of sound in that room
+                        // the chance for the room with the biggest sound to get picked is the biggest
+                        // since the more numbers that can be generated are in that range (if sound is 5 then 5 numbers can be the room pick, if its 15 its more likely)
+                        // basically its 1 in sound chance for the room to not get picked
+                        if (roll >= sum) {
+                            // trigger move method, that triggers onMove method - this way visitors can do their actions when they move but they all move the same
+                            this.move(rooms[i]);
+                            break; // exit for loop
+                        }
+                    }
                 }
 
                 this.activeSeconds = 0;
