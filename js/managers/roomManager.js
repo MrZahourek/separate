@@ -4,15 +4,16 @@ import * as Hitbox from './hitboxManager.js';
 import * as Asset from './assetManager.js';
 import {CLOSETS_IN_ROOM, DOORS_IN_ROOM, ROOMS_AROUND} from "../res/doorData.js";
 import {ROOM_BACKGROUNDS} from "../res/assetData.js";
-import {_rand, _removeItem} from "./timeManager.js";
+import {_rand, _removeItem, activeIntervals, TimeManager} from "./timeManager.js";
 import {ITEMS_IN_ROOM, ROOM_FAVORITES} from "../res/visitorData.js";
-import {activeVisitors, inactiveVisitors} from "./visitorManager.js";
+import {activeVisitors, allVisitors, inactiveVisitors} from "./visitorManager.js";
 
 
 // --- classes
 export class Room {
     constructor(roomName) {
         this.name = roomName;
+        this.id = 0;
 
         /// -- assets and hitboxes
         this.doors =   DOORS_IN_ROOM.get(roomName).map(id => new Hitbox.door(id));
@@ -23,7 +24,7 @@ export class Room {
         /// -- AI
         this.occupiedBy =      [];
         this.spawnedVisitors = [];
-        this.items =           ITEMS_IN_ROOM.get(roomName);
+        this.items =           ITEMS_IN_ROOM.get(roomName).map(id => new Closet(id));
         this.favorite =        ROOM_FAVORITES.get(roomName);
 
         this.ticks =   0;
@@ -69,7 +70,7 @@ export class Room {
         this.occupiedBy = [];
 
         // Handle any visitors inside closets
-        for (const place of this.closets) {
+        for (const place of this.items) {
             const visitor = place.occupiedBy[0];
             if (!visitor) { continue; } // skip the place if its empty
 
@@ -163,7 +164,7 @@ export class Room {
             this.spawnedVisitors.push(visitor.name);
         }
 
-        console.debug(`[${this.name}] spawning visitor: ${visitor.name} was a success, it ended in: ${location.constructor.name} \n visitors in room: ${this.inside}`);
+        console.debug(`[${this.name}] spawning visitor: ${visitor.name} was a success, it ended in: ${location.constructor.name} \n visitors in room: ${this.occupiedBy}`);
         return true;
     }
 
@@ -171,7 +172,7 @@ export class Room {
     spawnSort() {
         /// ────────────── get accessible spawn spots
         let spaces = [];
-        this.closets.forEach(space => {
+        this.items.forEach(space => {
             if (space.occupiedBy.length === 0) {
                 spaces.push(space.constructor.name.toLowerCase());
             }
@@ -378,5 +379,42 @@ window.addEventListener("sound", (e) => {
         case "closet":
             room.sound += 5;
             break;
+    }
+});
+window.addEventListener("visitor spawn", (e) => {
+    const data = e.detail;
+    let room = allRooms.get(data.to.name);
+    let visitor = allVisitors.get(data.visitor.name);
+
+    if (!room || !visitor) {
+        console.warn("Couldn’t find room or visitor in maps", room.name, visitor.name);
+        return;
+    }
+
+    if (data.itemID === 0) {
+        visitor.inRoom = room;
+        room.occupiedBy.push(visitor);
+        visitor.location = "room";
+    }
+    else {
+        for (let i = 0; i < room.items.length; i++) {
+            if (room.items[i].constructor.name.toLowerCase() === data.item && data.itemID === room.items[i].id) {
+                room.items[i].occupiedBy.push(visitor);
+                visitor.inRoom = room;
+                visitor.location = room.items[i].constructor.name.toLowerCase();
+            }
+        }
+    }
+
+    console.group("after visitor spawn");
+    console.debug("room.occupiedBy:", room.occupiedBy);
+    console.debug("allRooms.get():", allRooms.get(data.to.name).occupiedBy);
+    console.debug("visitor.inRoom:", visitor.inRoom);
+    console.debug("allVisitors.get():", allVisitors.get(data.visitor.name).inRoom);
+    console.groupEnd();
+
+    /// trigger movement
+    if (visitor.ability.includes("walker")){
+        activeIntervals.set(`${visitor.name} moving AI`, new TimeManager().setInterval(visitor.movementAI.bind(visitor), visitor.name === "warlock" ? 500 : 1000));
     }
 });

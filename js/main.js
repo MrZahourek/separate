@@ -6,10 +6,10 @@ import {canvas, ctx, drawCanvas} from "./managers/canvasManager.js";
 import {allRooms, Room} from "./managers/roomManager.js";
 import {setCurrentRoom, getCurrentRoom} from "./managers/roomManager.js";
 import {clickHandler, hoverHandler, position, visitor} from "./managers/hitboxManager.js";
-import {allVisitors} from "./managers/visitorManager.js";
+import {allVisitors, inactiveVisitors} from "./managers/visitorManager.js";
 import * as Visitor from "./managers/visitorManager.js";
 import * as Asset from "./managers/assetManager.js";
-import {_getTicks, TimeManager} from "./managers/timeManager.js";
+import {_getTicks, activeIntervals, TimeManager} from "./managers/timeManager.js";
 
 document.addEventListener("DOMContentLoaded", async () => {
     // 1) rooms
@@ -30,7 +30,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
 
         // trigger AI
-        new TimeManager().setInterval(allRooms.get(name).AI.bind(allRooms.get(name)), _getTicks(1));
+        activeIntervals.set(`${name} spawn AI`,new TimeManager().setInterval(allRooms.get(name).AI.bind(allRooms.get(name)), _getTicks(1)));
     }
 
     setCurrentRoom( allRooms.get("office") );
@@ -38,11 +38,17 @@ document.addEventListener("DOMContentLoaded", async () => {
     // declare visitors
     allVisitors.set("angel", new Visitor.angel())
     allVisitors.set("doorman", new Visitor.doorman());
+    allVisitors.set("hunter", new Visitor.hunter());
+    allVisitors.set("hollow", new Visitor.hollow());
+    allVisitors.set("horde", new Visitor.horde());
+    allVisitors.set("warlock", new Visitor.warlock());
+    allVisitors.set("reanimation", new Visitor.reanimation());
 
     // trigger AI
     allVisitors.forEach(visitor => {
-        new TimeManager().setInterval(visitor.AI.bind(visitor), _getTicks(1));
-    })
+        inactiveVisitors.push(visitor);
+        activeIntervals.set(`${visitor.name} spawn AI`,new TimeManager().setInterval(visitor.AI.bind(visitor), _getTicks(1)));
+    });
 
 
     // 3) canvas setup

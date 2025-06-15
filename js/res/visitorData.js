@@ -40,30 +40,36 @@ export const VISITORS_REQUIREMENTS = new Map([
     ["jester", []],
     ["jester clone", []],
     ["horde", []],
-    ["horde heart", []],
-    ["reanimation", []]
+    ["horde heart", ["closet"]],
+    ["reanimation", []],
+    ["warlock", []],
+    ["seelie stone", ["closet"]]
 ]);
 
 export const VISITOR_SPAWN_PLACES = new Map([
-    ["angel", []],
-    ["hollow", []],
-    ["hunter", []],
-    ["doorman", []],
-    ["jester", []],
-    ["jester clone", []],
-    ["horde", []],
-    ["horde heart", []],
-    ["reanimation", []]
+    ["angel", ["room"]],
+    ["hollow", ["room"]],
+    ["hunter", ["room"]],
+    ["doorman", ["room"]],
+    ["jester", ["room", "closet"]],
+    ["jester clone", ["room", "closet"]],
+    ["horde", ["room"]],
+    ["horde heart", ["closet"]],
+    ["reanimation", ["room"]],
+    ["warlock", ["room"]],
+    ["seelie stone", ["closet"]]
 ]);
 
 export const VISITOR_ABILITIES = new Map([
-    ["angel", []],
-    ["hollow", []],
-    ["hunter", []],
-    ["doorman", []],
+    ["angel", ["walker"]],
+    ["hollow", ["walker"]],
+    ["hunter", ["room blocker"]],
+    ["doorman", ["room blocker"]],
     ["jester", []],
     ["jester clone", []],
     ["horde", []],
     ["horde heart", []],
-    ["reanimation", []]
+    ["reanimation", ["walker"]],
+    ["warlock", ["walker"]],
+    ["seelie stone", []]
 ]);

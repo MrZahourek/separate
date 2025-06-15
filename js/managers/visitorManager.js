@@ -34,6 +34,7 @@ class Visitor {
         this.moveAI = {cur: _rand(3, 5), min: 3, max: 5};
         this.fails = 0;
         this.inRoom = null;
+        this.location = null;
     }
 
     onMove() {}
@@ -75,7 +76,11 @@ class Visitor {
 
     despawn() {}
 
-    kill() {}
+    kill() {
+        document.cookie = `visitor=${this.name}`;
+
+        window.location.href = "death.php";
+    }
 
     spawn(inRoom) {
         this.inRoom = inRoom;
@@ -83,7 +88,6 @@ class Visitor {
     }
 
     AI() {
-        console.warn(`[${this.name}] AI started`);
         if (!this.isActive) {
             this.inactiveTicks++;
             this.priority = this.inactiveTicks + (this.spawnAI.cur * 3);
@@ -107,6 +111,7 @@ class Visitor {
 
             if (this.activeSeconds > (10 - this.moveAI.cur) + _rand(0, 15) - this.fails) {
                 // pick possible rooms
+                console.debug(`[${this.name}] is about to move from ${this.inRoom}`);
                 const possibleRooms = this.inRoom.roomsAround;
                 const pickedIndex = _rand(0, possibleRooms.length);
 
@@ -126,6 +131,8 @@ class Visitor {
                     let weights = [];
 
                     for (let i = 0; i < possibleRooms.length; i++) {
+                        if (allRooms.get(possibleRooms[i]).occupiedBy.includes(allVisitors.get("doorman")) || allRooms.get(possibleRooms[i]).occupiedBy.includes(allVisitors.get("hunter"))) { break; }
+
                         rooms.push(allRooms.get(possibleRooms[i]));
                         weights.push(allRooms.get(possibleRooms[i]).sound);
 
@@ -182,6 +189,7 @@ class Angel extends Visitor{
         this.effect = new Effect.flashlight();
         this.hoveredMS = 0;
         this.hoveredTimes = 0;
+        this.killTimer = null;
 
         // -- AI
         this.isActive = true;
@@ -192,11 +200,23 @@ class Angel extends Visitor{
     onMove() {}
 
     onDeath() {
+        clearTimeout(this.killTimer);
+        this.killTimer = null;
+
         this.deathAudio.play();
         this.isActive = false;
         this.effect.disable();
+
         _removeItem(getCurrentRoom().occupiedBy, this);
         drawCanvas();
+    }
+
+    _startKillTimer() {
+        if (this.killTimer) { clearTimeout(this.killTimer); }
+
+        this.killTimer = setTimeout(() => {
+            this.kill();
+        }, 1500);
     }
 
     onSameRoom() {
@@ -212,6 +232,8 @@ class Angel extends Visitor{
 
         this.offsetX = _rand(canvas.width * 0.05, maxX);
         this.offsetY = _rand(canvas.height * 0.05, maxY);
+
+        this._startKillTimer();
     }
 
     onHitboxHover() {
@@ -262,7 +284,9 @@ class Doorman extends Visitor{
 
     onSpawn() {}
 
-    onSameRoom() {}
+    onSameRoom() {
+        this.kill();
+    }
 }
 
 class Hunter extends Visitor{
@@ -323,7 +347,6 @@ class Reanimation extends Visitor{
 
     movementAI() {}
 }
-
 class HordeHeart {
     constructor() {}
 
@@ -343,6 +366,13 @@ class Horde extends Visitor{
 
     onDeath() {}
 }
+class SeelieStone {}
+class Warlock extends Visitor {
+    constructor() {
+        super("warlock");
+    }
+
+}
 
 export let allVisitors = new Map();
 
@@ -355,5 +385,7 @@ export {
     Hollow as hollow,
     Reanimation as reanimation,
     HordeHeart as heart,
-    Horde as horde
+    Horde as horde,
+    Warlock as warlock,
+    SeelieStone as stone
 }

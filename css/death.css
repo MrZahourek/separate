@@ -1,0 +1,61 @@
+/* --- fonts --- */
+@font-face {
+    font-family: vhs;
+    src: url("/css/VT323-Regular.ttf");
+}
+
+/* --- animations --- */
+@keyframes textFlicker {
+    from {
+        text-shadow: 3px 0 0 #ea36af, -3px 0 0 #75fa69;
+    }
+    to {
+        text-shadow: 3px 1px 3px #ea36af, -5px -1px 3px #75fa69;
+    }
+}
+
+
+* {
+    margin: 0;
+}
+
+body {
+    background-image: url("/images/death.jpg");
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+h1 {
+    font-family: vhs,monospace;
+    color: #ffab00;
+    font-size: 10em;
+    letter-spacing: 5px;
+    text-align: center;
+
+    animation: alternate infinite 0.01s textFlicker;
+    text-shadow: 0.06rem 0 0.06rem #f20000, -0.125rem 0 0.06rem #f20000;
+}
+
+#imgWrap {
+    width: 300px;
+    height: 400px;
+    overflow: hidden;
+
+    border-color: antiquewhite;
+    border-width: 10px 10px 50px 10px;
+    border-style: solid;
+
+    background-color: #111111;
+
+    rotate: -35deg;
+
+    position: absolute;
+    left: 35vw;
+    top: 30vh;
+}
+
+img {
+    width: 300px;
+    height: 600px;
+}
+
