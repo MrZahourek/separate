@@ -95,6 +95,17 @@ export const CLOSET_COORDINATES = {
         closed: [{x:648,y:57},{x:875,y:59},{x:895,y:41},{x:939,y:18},{x:991,y:6},{x:1051,y:8},{x:1105,y:26},{x:1148,y:57},{x:1376,y:59},{x:1377,y:116},{x:1372,y:118},{x:1368,y:123},{x:1359,y:126},{x:1351,y:135},{x:1350,y:143},{x:1344,y:148},{x:1335,y:148},{x:1331,y:845},{x:1328,y:850},{x:1334,y:863},{x:1329,y:870},{x:1321,y:878},{x:1315,y:882},{x:1313,y:888},{x:1334,y:890},{x:1334,y:897},{x:1276,y:901},{x:1275,y:884},{x:1284,y:879},{x:1291,y:876},{x:1279,y:859},{x:742,y:857},{x:730,y:869},{x:738,y:880},{x:747,y:888},{x:753,y:895},{x:680,y:898},{x:687,y:889},{x:707,y:886},{x:707,y:880},{x:686,y:861},{x:693,y:846},{x:698,y:844},{x:690,y:839},{x:690,y:143},{x:682,y:145},{x:677,y:142},{x:675,y:137},{x:661,y:120},{x:650,y:121},{x:648,y:117},{x:643,y:114}] }
 }
 
+export const CLOSET_OFFSETS = {
+    1 : {open: {offsetX: 0, offsetY: 0}, closed: {offsetX: 0, offsetY: 0}},
+    2 : {open: {offsetX: 0, offsetY: 0}, closed: {offsetX: 0, offsetY: 0}},
+    3 : {open: {offsetX: 0, offsetY: 0}, closed: {offsetX: 0, offsetY: 0}},
+    4 : {open: {offsetX: 0, offsetY: 0}, closed: {offsetX: 0, offsetY: 0}},
+    5 : {open: {offsetX: 0, offsetY: 0}, closed: {offsetX: 0, offsetY: 0}},
+    6 : {open: {offsetX: 0, offsetY: 0}, closed: {offsetX: 0, offsetY: 0}},
+    7 : {open: {offsetX: 0, offsetY: 0}, closed: {offsetX: 0, offsetY: 0}},
+    8 : {open: {offsetX: 0, offsetY: 0}, closed: {offsetX: 0, offsetY: 0}}
+}
+
 /// data for scaling
 export const ORIGINAL_SCREEN_SIZE = {width: 1920, height: 919};
 

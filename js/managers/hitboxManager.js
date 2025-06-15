@@ -110,6 +110,17 @@ class ClosetHitbox {
         // --- assets
         this.clickAudio = new Asset.audio("audio/closet.mp3");
     }
+
+    getHitbox() {
+        // get offsets
+        const offsetX = CLOSET_OFFSETS[this.id]
+
+        // get scale
+
+        // get cords
+
+        // return path
+    }
 }
 
 // --- handlers
