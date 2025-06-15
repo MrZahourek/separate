@@ -216,7 +216,7 @@ class Angel extends Visitor{
 
         this.killTimer = setTimeout(() => {
             this.kill();
-        }, 1500);
+        }, 5000);
     }
 
     onSameRoom() {
