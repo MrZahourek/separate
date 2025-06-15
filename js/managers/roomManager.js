@@ -3,7 +3,7 @@
 import * as Hitbox from './hitboxManager.js';
 import * as Asset from './assetManager.js';
 import {CLOSETS_IN_ROOM, DOORS_IN_ROOM, ROOMS_AROUND} from "../res/doorData.js";
-import {ROOM_BACKGROUNDS} from "../res/assetData.js";
+import {CLOSET_PATHS, ROOM_BACKGROUNDS} from "../res/assetData.js";
 import {_rand, _removeItem, activeIntervals, TimeManager} from "./timeManager.js";
 import {ITEMS_IN_ROOM, ROOM_FAVORITES} from "../res/visitorData.js";
 import {activeVisitors, allVisitors, inactiveVisitors} from "./visitorManager.js";
@@ -36,7 +36,7 @@ export class Room {
         this.threshold = { cur: 0, min: 25, max: 75 };
         this.sleep =     { lastSleepTick: 0, min: 2, max: 6 };
 
-        this.roomsAround = ROOMS_AROUND.get(roomName);
+        this.roomsAround = ROOMS_AROUND.get(roomName).map(name => allRooms.get(name));
         this.sound =       0;
     }
 
@@ -68,6 +68,7 @@ export class Room {
 
         // clear out the visitors here and not in the for cycle
         this.occupiedBy = [];
+        this.status = "sleeping";
 
         // Handle any visitors inside closets
         for (const place of this.items) {
@@ -338,8 +339,8 @@ export class Closet {
         this.id = closetID;
 
         // -- assets & hitboxes
-        this.closedImg = new Asset.image();
-        this.openImg = new Asset.image();
+        this.closedImg = new Asset.image(CLOSET_PATHS[this.id.toString()]["closed"]);
+        this.openImg = new Asset.image(CLOSET_PATHS[this.id.toString()]["open"]);
 
         this.state = "closed";
 

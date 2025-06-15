@@ -109,7 +109,16 @@ export const CLOSET_OFFSETS = {
 /// data for scaling
 export const ORIGINAL_SCREEN_SIZE = {width: 1920, height: 919};
 
-
+export const CLOSET_DESIRED_SIZE = {
+    1: {open: {width: 500, height: 310}, closed: {width: 500, height: 310}},
+    2: {open: {width: 500, height: 310}, closed: {width: 500, height: 310}},
+    3: {open: {width: 500, height: 310}, closed: {width: 500, height: 310}},
+    4: {open: {width: 500, height: 310}, closed: {width: 500, height: 310}},
+    5: {open: {width: 500, height: 310}, closed: {width: 500, height: 310}},
+    6: {open: {width: 500, height: 310}, closed: {width: 500, height: 310}},
+    7: {open: {width: 500, height: 310}, closed: {width: 500, height: 310}},
+    8: {open: {width: 500, height: 310}, closed: {width: 500, height: 310}}
+}
 export const ROOMS_AROUND = new Map([
     ["hall 1", ["bathroom", "kitchen", "living room"]],
     ["bathroom", ["hall 1", "living room"]],

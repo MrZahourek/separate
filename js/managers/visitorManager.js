@@ -10,7 +10,8 @@ import {
 } from "../res/visitorData.js";
 import * as Effect from "./effectManager.js";
 import {allRooms, getCurrentRoom, setCurrentRoom} from "./roomManager.js";
-import {_rand, _removeItem} from "./timeManager.js";
+import {_rand, _removeItem, TimeManager} from "./timeManager.js";
+import {position} from "./hitboxManager.js";
 
 export let activeVisitors = [];
 export let inactiveVisitors = [];
@@ -74,7 +75,14 @@ class Visitor {
 
     }
 
-    despawn() {}
+    despawn() {
+        this.isActive = false;
+        _removeItem(activeVisitors, this);
+        _removeItem(allRooms.get(this.inRoom.name).occupiedBy, this);
+        inactiveVisitors.push(this);
+        console.warn(`${this.name} just died`);
+        this.onDeath();
+    }
 
     kill() {
         document.cookie = `visitor=${this.name}`;
@@ -177,9 +185,10 @@ class Angel extends Visitor{
 
         // --- Assets and hitboxes
         this.visitorImg = new Asset.image("images/angel.png");
-        this.moveAudio = new Asset.audio();
+        this.moveAudio = new Asset.audio("audio/angel move.mp3");
         this.effectAudio = new Asset.audio("audio/angel hit.mp3");
         this.deathAudio = new Asset.audio("audio/angel death.mp3");
+        this.spawnAudio = new Asset.audio("audio/angel spawn.mp3");
         this.hitboxClass = new Hitbox.visitor("angel");
         this.hitbox = null;
 
@@ -195,9 +204,13 @@ class Angel extends Visitor{
         this.isActive = true;
     }
 
-    onSpawn() {}
+    onSpawn() {
+        this.spawnAudio.play();
+    }
 
-    onMove() {}
+    onMove() {
+        this.moveAudio.play();
+    }
 
     onDeath() {
         clearTimeout(this.killTimer);
@@ -216,10 +229,11 @@ class Angel extends Visitor{
 
         this.killTimer = setTimeout(() => {
             this.kill();
-        }, 5000);
+        }, 6000);
     }
 
     onSameRoom() {
+        this._startKillTimer();
         this.effect.enable();
 
         this.isActive = true;
@@ -232,14 +246,14 @@ class Angel extends Visitor{
 
         this.offsetX = _rand(canvas.width * 0.05, maxX);
         this.offsetY = _rand(canvas.height * 0.05, maxY);
-
-        this._startKillTimer();
     }
 
     onHitboxHover() {
         this.hoveredMS++;
 
-        if (this.hoveredMS >= 150) {
+        console.debug("[angel] hovered ms: " + this.hoveredMS);
+
+        if (this.hoveredMS >= 15) {
             this.hoveredTimes++;
 
             if (this.hoveredTimes <= 2) {
@@ -277,12 +291,28 @@ class Doorman extends Visitor{
 
         // -- Assets
         this.effectAudio = new Asset.audio("audio/doorman effect.mp3");
-        this.deathAudio = new Asset.audio();
+        this.deathAudio = new Asset.audio("audio/doorman death.mp3");
+        this.deathTimeout = null;
     }
 
-    onDeath() {}
+    despawn() {
+        this.isActive = false;
+        _removeItem(activeVisitors, this);
+        allRooms.get(this.inRoom.name).status = "active";
+        _removeItem(allRooms.get(this.inRoom.name).occupiedBy, this);
+        inactiveVisitors.push(this);
+        console.warn(`${this.name} just died`);
+        this.onDeath();
+    }
 
-    onSpawn() {}
+    onDeath() {
+        this.deathAudio.audio.volume = 0.33;
+        this.deathAudio.play();
+    }
+
+    onSpawn() {
+        this.deathTimeout = new TimeManager().setTimeout(this.despawn.bind(this), 60000);
+    }
 
     onSameRoom() {
         this.kill();
@@ -292,30 +322,61 @@ class Doorman extends Visitor{
 class Hunter extends Visitor{
     constructor() {
         super("hunter");
+
+        // -- audio
+        this.spawnAudio = new Asset.audio("audio/hunter spawn.mp3");
+        this.deathAudio = new Asset.audio("audio/hunter death.mp3")
     }
 
-    onSpawn() {}
+    onSpawn() {
+        const roomAudio = new Asset.audio(`audio/hunter ${this.inRoom.name}.mp3`);
+        roomAudio.audio.volume = 0.15;
+        new TimeManager().setTimeout(this.despawn.bind(this), 60000);
+        this.spawnAudio.play();
+        roomAudio.play();
+    }
 
-    onDeath() {}
+    onDeath() {
+        this.deathAudio.play();
+    }
+
+    onSameRoom() {
+        this.kill();
+    }
 }
 
 class Hollow extends Visitor{
     constructor() {
         super("hollow");
+
+        this.moveAudio = new Asset.audio("audio/hollow move.mp3");
+        this.deathAudio = new Asset.audio("audio/hollow death.mp3");
+
+        this.visitorImg = new Asset.image("images/hollow.png");
     }
 
-    onSpawn() {}
+    onSpawn() {
+        new TimeManager().setTimeout(this.despawn.bind(this), 120000);
+    }
 
-    onDeath() {}
+    onDeath() {
+        this.deathAudio.play();
+    }
 
-    onMove() {}
+    onMove() {
+        this.moveAudio.play();
+    }
 
-    onSameRoom() {}
+    onSameRoom() {
+        new TimeManager().setTimeout(() => {
+            if (this.inRoom === getCurrentRoom()) { this.kill() }
+        }, 5000);
+    }
 
     movementAI() {}
 }
 
-class Reanimation extends Visitor{
+class Reanimation extends Visitor {
     constructor() {
         super("reanimation");
 
@@ -331,21 +392,18 @@ class Reanimation extends Visitor{
     onDeath() {}
 
     onMove() {
-        // -- move
-
-        // -- trigger ability
         // get rooms around this one
+        const rooms = this.inRoom.roomsAround;
 
         // check for player
+        if (rooms.includes(getCurrentRoom())) {
+            const original = {x: position.x, y: position.y};
+            new TimeManager().setInterval(() => {
 
-        // if the player is there play audio
-
-        // if player moves mouse too much kill
+            })
+        }
     }
 
-    AI() {}
-
-    movementAI() {}
 }
 class HordeHeart {
     constructor() {}

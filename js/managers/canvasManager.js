@@ -4,6 +4,7 @@ import {getCurrentRoom} from "./roomManager.js";
 import * as Asset from "./assetManager.js";
 import * as Visitor from "./visitorManager.js";
 import {HITBOX_ORIGINAL_SCREEN, VISITOR_IMAGE_DESIRED_SIZE} from "../res/visitorData.js";
+import {CLOSET_DESIRED_SIZE} from "../res/doorData.js";
 
 // --- variables
 
@@ -26,7 +27,12 @@ export async function drawCanvas() {
 
     // draw visitors
     for (const visitor of getCurrentRoom().occupiedBy) {
-        visitor.onSameRoom();
+        try {
+            visitor.onSameRoom();
+        }
+        catch (err) {
+            console.log('visitor doesnt have onSameRoom')
+        }
 
         const size = VISITOR_IMAGE_DESIRED_SIZE[visitor.name];
         const scaleW = size.width / HITBOX_ORIGINAL_SCREEN[visitor.name].width;
@@ -40,5 +46,19 @@ export async function drawCanvas() {
     }
 
     // draw objects
+    for (const item of getCurrentRoom().items) {
+        if (item.constructor.name === "Closet") {
+            const size = CLOSET_DESIRED_SIZE[item.id.toString()][item.state];
+            const scaleW = size.width / HITBOX_ORIGINAL_SCREEN["closet"].width;
+            const scaleH = size.height / HITBOX_ORIGINAL_SCREEN["closet"].height;
+
+            if (item.state === "open") {
+                await item.openImg.drawPrecise(item.offsetX, item.offsetY, scaleW, scaleH);
+            }
+            else {
+                await item.closedImg.drawPrecise(item.offsetX, item.offsetY, scaleW, scaleH);
+            }
+        }
+    }
 
 }

@@ -17,7 +17,8 @@ export const HITBOX_ORIGINAL_SCREEN = {
     stone: {width: 100, height: 100},
     heart: {width: 345, height: 486},
     horde: {width: 1920, height: 919},
-    warlock: {width: 1920, height: 919}
+    warlock: {width: 1920, height: 919},
+    closet: {width: 1920, height: 919}
 };
 
 export const ITEMS_IN_ROOM = new Map([

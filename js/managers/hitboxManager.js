@@ -1,7 +1,13 @@
 /// --- Hitboxes
 // --- imports
 import {allRooms, setCurrentRoom, getCurrentRoom} from "./roomManager.js";
-import {DOOR_CONNECTIONS, DOOR_COORDINATES, ORIGINAL_SCREEN_SIZE} from "../res/doorData.js";
+import {
+    CLOSET_COORDINATES, CLOSET_DESIRED_SIZE,
+    CLOSET_OFFSETS,
+    DOOR_CONNECTIONS,
+    DOOR_COORDINATES,
+    ORIGINAL_SCREEN_SIZE
+} from "../res/doorData.js";
 import {ctx, drawCanvas} from "./canvasManager.js";
 import * as Asset from "./assetManager.js";
 import {HITBOX_ORIGINAL_SCREEN, VISITOR_HITBOX_CORDS, VISITOR_IMAGE_DESIRED_SIZE} from "../res/visitorData.js";
@@ -109,17 +115,38 @@ class ClosetHitbox {
 
         // --- assets
         this.clickAudio = new Asset.audio("audio/closet.mp3");
+        this.hitbox = this.getHitbox();
     }
 
     getHitbox() {
         // get offsets
-        const offsetX = CLOSET_OFFSETS[this.id]
+        const offsetX = CLOSET_OFFSETS[this.id][this.state].offsetX;
+        const offsetY = CLOSET_OFFSETS[this.id][this.state].offsetY;
 
         // get scale
+        let path = new Path2D();
+
+        const scaleWidth = canvas.width / HITBOX_ORIGINAL_SCREEN["closet"].width;
+        const scaleHeight = canvas.height / HITBOX_ORIGINAL_SCREEN["closet"].height;
+
+        let scale = Math.max((CLOSET_DESIRED_SIZE[this.id][this.state].height / HITBOX_ORIGINAL_SCREEN["closet"].height), (CLOSET_DESIRED_SIZE[this.id][this.state].width / HITBOX_ORIGINAL_SCREEN["closet"].width));
 
         // get cords
+        CLOSET_COORDINATES[this.id][this.state].map((point, i) => {
+            const x = point.x * scaleWidth * scale + offsetX;
+            const y = point.y * scaleHeight * scale + offsetY;
+
+            i === 0 ? path.moveTo(x, y) : path.lineTo(x, y);
+        });
 
         // return path
+        return path;
+    }
+
+    onClick() {
+        this.state === "open" ? this.state = "closed" : this.state = "open";
+        this.clickAudio.play();
+        drawCanvas();
     }
 }
 
