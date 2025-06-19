@@ -173,6 +173,15 @@ export function clickHandler(e) {
                     console.log("");
                 }
             }
+
+            if(allVisitors.get("angel").effect.active === true) {
+                allVisitors.get("angel").effect.disable();
+
+                clearTimeout(allVisitors.get("angel").killTimer);
+                allVisitors.get("angel").killTimer = null;
+                allVisitors.get("angel").hoveredTimes = 0;
+                allVisitors.get("angel").hoveredMS = 0;
+            }
         }
     }
 

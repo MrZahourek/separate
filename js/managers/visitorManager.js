@@ -9,7 +9,7 @@ import {
     VISITORS_REQUIREMENTS
 } from "../res/visitorData.js";
 import * as Effect from "./effectManager.js";
-import {allRooms, getCurrentRoom, setCurrentRoom} from "./roomManager.js";
+import {allRooms, getCurrentRoom} from "./roomManager.js";
 import {_rand, _removeItem, TimeManager} from "./timeManager.js";
 import {position} from "./hitboxManager.js";
 
@@ -19,6 +19,10 @@ export let inactiveVisitors = [];
 class Visitor {
     constructor(visitorName) {
         this.name = visitorName;
+
+        this.offsetX = 0;
+        this.offsetY = 0;
+        this.visitorImg = new Asset.image(`images/${visitorName}.png`);
 
         // -- spawn AI
         this.isActive = false;
@@ -43,6 +47,8 @@ class Visitor {
     onSpawn() {}
 
     onDeath() {}
+
+    onSameRoom() {}
 
     move(toRoom) {
         // inform about movement
@@ -119,8 +125,9 @@ class Visitor {
 
             if (this.activeSeconds > (10 - this.moveAI.cur) + _rand(0, 15) - this.fails) {
                 // pick possible rooms
-                console.debug(`[${this.name}] is about to move from ${this.inRoom}`);
+                console.debug(`[${this.name}] is about to move from ${JSON.stringify(this.inRoom)}`);
                 const possibleRooms = this.inRoom.roomsAround;
+                console.debug(`${this.name} moving to rooms: ${possibleRooms}`);
                 const pickedIndex = _rand(0, possibleRooms.length);
 
                 if (pickedIndex === possibleRooms.length) {
@@ -229,12 +236,12 @@ class Angel extends Visitor{
 
         this.killTimer = setTimeout(() => {
             this.kill();
-        }, 6000);
+        }, 10000);
     }
 
     onSameRoom() {
         this._startKillTimer();
-        this.effect.enable();
+        //this.effect.enable();
 
         this.isActive = true;
 
@@ -306,7 +313,7 @@ class Doorman extends Visitor{
     }
 
     onDeath() {
-        this.deathAudio.audio.volume = 0.33;
+        this.deathAudio.audio.volume = 0.03;
         this.deathAudio.play();
     }
 
@@ -349,10 +356,14 @@ class Hollow extends Visitor{
     constructor() {
         super("hollow");
 
+        this.offsetX = 400;
+        this.offsetY = 250;
+
         this.moveAudio = new Asset.audio("audio/hollow move.mp3");
         this.deathAudio = new Asset.audio("audio/hollow death.mp3");
-
         this.visitorImg = new Asset.image("images/hollow.png");
+
+        this.killTimer = null;
     }
 
     onSpawn() {
@@ -365,15 +376,65 @@ class Hollow extends Visitor{
 
     onMove() {
         this.moveAudio.play();
+        this.killTimer = null;
+    }
+
+    _startKillTimer() {
+        if (this.killTimer) { clearTimeout(this.killTimer); }
+
+        this.killTimer = setTimeout(() => {
+            if (getCurrentRoom() === this.inRoom) {
+                this.kill();
+            }
+        }, 3000);
     }
 
     onSameRoom() {
-        new TimeManager().setTimeout(() => {
-            if (this.inRoom === getCurrentRoom()) { this.kill() }
-        }, 5000);
+       this._startKillTimer();
     }
 
-    movementAI() {}
+    movementAI() {
+        if (this.isActive) {
+            this.activeSeconds++;
+
+            if (this.activeSeconds > (10 - this.moveAI.cur) + _rand(0, 15) - this.fails) {
+                // pick possible rooms
+                const possibleRooms = this.inRoom.roomsAround;
+                const pickedIndex = _rand(0, possibleRooms.length);
+
+                if (pickedIndex === possibleRooms.length) {
+                    this.fails++;
+
+                    // fail bonus
+                    if (this.fails >= 3) {
+                        this.moveAI.min += 2;
+                        this.moveAI.max += 2;
+                        this.moveAI.cur = _rand(this.moveAI.min, this.moveAI.max);
+                    }
+                }
+                else {
+                    let max = possibleRooms[0];
+
+                    for (let i = 0; i < possibleRooms.length; i++) {
+                        if (max.sound < possibleRooms[i].sound) {
+                            max = possibleRooms;
+                        }
+                    }
+
+                    console.warn(`picked room = ${max.name}`);
+
+                    this.move(max);
+
+                    this.fails = 0;
+                    this.moveAI.min = 3;
+                    this.moveAI.max = 5;
+                    this.moveAI.cur = _rand(this.moveAI.min, this.moveAI.max);
+                }
+
+                this.activeSeconds = 0;
+            }
+        }
+    }
 }
 
 class Reanimation extends Visitor {
@@ -428,11 +489,21 @@ class SeelieStone {}
 class Warlock extends Visitor {
     constructor() {
         super("warlock");
+
+        // -- Assets
+        this.visitorImg = new Asset.image("images/warlock.png");
     }
 
 }
 
 export let allVisitors = new Map();
+
+window.addEventListener("visitor death", e => {
+    const { visitor } = e.detail;
+    visitor.despawn();
+    // then force a full redraw:
+    drawCanvas();
+});
 
 export {
     Angel as angel,

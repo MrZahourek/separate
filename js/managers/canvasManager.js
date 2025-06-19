@@ -1,8 +1,6 @@
 /// --- Canvas manager
 // -- imports
 import {getCurrentRoom} from "./roomManager.js";
-import * as Asset from "./assetManager.js";
-import * as Visitor from "./visitorManager.js";
 import {HITBOX_ORIGINAL_SCREEN, VISITOR_IMAGE_DESIRED_SIZE} from "../res/visitorData.js";
 import {CLOSET_DESIRED_SIZE} from "../res/doorData.js";
 
@@ -27,11 +25,8 @@ export async function drawCanvas() {
 
     // draw visitors
     for (const visitor of getCurrentRoom().occupiedBy) {
-        try {
+        if (visitor.onSameRoom()) {
             visitor.onSameRoom();
-        }
-        catch (err) {
-            console.log('visitor doesnt have onSameRoom')
         }
 
         const size = VISITOR_IMAGE_DESIRED_SIZE[visitor.name];
@@ -41,8 +36,9 @@ export async function drawCanvas() {
         console.log(size + " " + scaleW + " " + scaleH);
 
         await visitor.visitorImg.drawPrecise(visitor.offsetX, visitor.offsetY, scaleW, scaleH);
-
-        visitor.hitbox = visitor.hitboxClass.getHitbox(visitor.offsetX, visitor.offsetY);
+        if (visitor.hitboxClass) {
+            visitor.hitbox = visitor.hitboxClass.getHitbox(visitor.offsetX, visitor.offsetY);
+        }
     }
 
     // draw objects

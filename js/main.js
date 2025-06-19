@@ -10,6 +10,7 @@ import {allVisitors, inactiveVisitors} from "./managers/visitorManager.js";
 import * as Visitor from "./managers/visitorManager.js";
 import * as Asset from "./managers/assetManager.js";
 import {_getTicks, activeIntervals, TimeManager} from "./managers/timeManager.js";
+import {ROOMS_AROUND} from "./res/doorData.js";
 
 document.addEventListener("DOMContentLoaded", async () => {
     // 1) rooms
@@ -28,6 +29,12 @@ document.addEventListener("DOMContentLoaded", async () => {
         for (let closet of allRooms.get(name).closets) {
             await closet.clickAudio.load();
         }
+    }
+
+    for ( let name of roomName ) {
+        console.warn(name);
+        // get rooms around
+        allRooms.get(name).roomsAround = ROOMS_AROUND.get(name).map(name => allRooms.get(name));
 
         // trigger AI
         activeIntervals.set(`${name} spawn AI`,new TimeManager().setInterval(allRooms.get(name).AI.bind(allRooms.get(name)), _getTicks(1)));
@@ -41,14 +48,18 @@ document.addEventListener("DOMContentLoaded", async () => {
     allVisitors.set("hunter", new Visitor.hunter());
     allVisitors.set("hollow", new Visitor.hollow());
     allVisitors.set("horde", new Visitor.horde());
-    allVisitors.set("warlock", new Visitor.warlock());
+    await allVisitors.set("warlock", new Visitor.warlock());
     allVisitors.set("reanimation", new Visitor.reanimation());
 
-    // trigger AI
-    allVisitors.forEach(visitor => {
+    for (const visitor of allVisitors.values()) {
+        await visitor.visitorImg.load()
+            .then(() => {
+                console.debug(`[${visitor.name}] asset loaded`);
+            });
+
         inactiveVisitors.push(visitor);
-        activeIntervals.set(`${visitor.name} spawn AI`,new TimeManager().setInterval(visitor.AI.bind(visitor), _getTicks(1)));
-    });
+        setInterval(() => {visitor.AI.bind(visitor)}, _getTicks(1));
+    }
 
 
     // 3) canvas setup

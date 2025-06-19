@@ -36,7 +36,7 @@ export class Room {
         this.threshold = { cur: 0, min: 25, max: 75 };
         this.sleep =     { lastSleepTick: 0, min: 2, max: 6 };
 
-        this.roomsAround = ROOMS_AROUND.get(roomName).map(name => allRooms.get(name));
+        this.roomsAround = null;
         this.sound =       0;
     }
 
@@ -417,5 +417,9 @@ window.addEventListener("visitor spawn", (e) => {
     /// trigger movement
     if (visitor.ability.includes("walker")){
         activeIntervals.set(`${visitor.name} moving AI`, new TimeManager().setInterval(visitor.movementAI.bind(visitor), visitor.name === "warlock" ? 500 : 1000));
+    }
+
+    if (visitor.onSpawn() !== null) {
+        visitor.onSpawn();
     }
 });

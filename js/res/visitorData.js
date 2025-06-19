@@ -9,6 +9,7 @@ export const VISITOR_IMAGE_DESIRED_SIZE = {
     heart: {width: 230, height: 300},
     stone: {width: 70, height: 70},
     warlock: {width: 300, height: 575},
+    hollow: {width: 280, height: 575},
     horde: {width: 340, height: 640}
 };
 
@@ -18,6 +19,7 @@ export const HITBOX_ORIGINAL_SCREEN = {
     heart: {width: 345, height: 486},
     horde: {width: 1920, height: 919},
     warlock: {width: 1920, height: 919},
+    hollow: {width: 1920, height: 919},
     closet: {width: 1920, height: 919}
 };
 
