@@ -291,20 +291,20 @@ class Angel extends Visitor{
     }
 }
 
-class JesterClone {
-    constructor() {}
-
-    onSpawn() {}
-}
-class Jester extends Visitor{
-    constructor() {
-        super("jester");
-
-        // --- Assets & Hitboxes
-    }
-
-    onSpawn() {}
-}
+// class JesterClone {
+//     constructor() {}
+//
+//     onSpawn() {}
+// }
+// class Jester extends Visitor{
+//     constructor() {
+//         super("jester");
+//
+//         // --- Assets & Hitboxes
+//     }
+//
+//     onSpawn() {}
+// }
 
 class Doorman extends Visitor{
     constructor() {
@@ -506,35 +506,35 @@ class Reanimation extends Visitor {
     }
 
 }
-class HordeHeart {
-    constructor() {}
-
-    onSpawn() {}
-
-    onDeath() {}
-
-    onHitboxClick() {}
-}
-
-class Horde extends Visitor{
-    constructor() {
-        super("horde");
-    }
-
-    onSpawn() {}
-
-    onDeath() {}
-}
-class SeelieStone {}
-class Warlock extends Visitor {
-    constructor() {
-        super("warlock");
-
-        // -- Assets
-        this.visitorImg = new Asset.image("images/warlock.png");
-    }
-
-}
+// class HordeHeart {
+//     constructor() {}
+//
+//     onSpawn() {}
+//
+//     onDeath() {}
+//
+//     onHitboxClick() {}
+// }
+//
+// class Horde extends Visitor{
+//     constructor() {
+//         super("horde");
+//     }
+//
+//     onSpawn() {}
+//
+//     onDeath() {}
+// }
+// class SeelieStone {}
+// class Warlock extends Visitor {
+//     constructor() {
+//         super("warlock");
+//
+//         // -- Assets
+//         this.visitorImg = new Asset.image("images/warlock.png");
+//     }
+//
+// }
 
 export let allVisitors = new Map();
 
@@ -547,14 +547,8 @@ window.addEventListener("visitor death", e => {
 
 export {
     Angel as angel,
-    Jester as jester,
-    JesterClone as jesterClone,
     Doorman as doorman,
     Hunter as hunter,
     Hollow as hollow,
     Reanimation as reanimation,
-    HordeHeart as heart,
-    Horde as horde,
-    Warlock as warlock,
-    SeelieStone as stone
 }

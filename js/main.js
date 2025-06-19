@@ -17,11 +17,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     // 1) visitors
     // declare visitors
     allVisitors.set("angel", new Visitor.angel())
-    //allVisitors.set("doorman", new Visitor.doorman());
-    //allVisitors.set("hunter", new Visitor.hunter());
+    allVisitors.set("doorman", new Visitor.doorman());
+    allVisitors.set("hunter", new Visitor.hunter());
     allVisitors.set("hollow", new Visitor.hollow());
-    allVisitors.set("horde", new Visitor.horde());
-    await allVisitors.set("warlock", new Visitor.warlock());
     allVisitors.set("reanimation", new Visitor.reanimation());
 
     for (const visitor of allVisitors.values()) {
