@@ -22,6 +22,10 @@ export function _getTicks(s) {
     return 500 * s + _rand(0, 75);
 }
 
+export function _between(num, min, max) {
+    return num >= min && num <= max;
+}
+
 export const activeIntervals = new Map();
 export class TimeManager {
     constructor() {

@@ -10,7 +10,7 @@ import {
 } from "../res/visitorData.js";
 import * as Effect from "./effectManager.js";
 import {allRooms, getCurrentRoom} from "./roomManager.js";
-import {_rand, _removeItem, TimeManager} from "./timeManager.js";
+import {_between, _rand, _removeItem, TimeManager} from "./timeManager.js";
 import {position} from "./hitboxManager.js";
 
 export let activeVisitors = [];
@@ -253,7 +253,6 @@ class Angel extends Visitor{
     }
 
     onSameRoom() {
-        
         this._startKillTimer();
         //this.effect.enable();
 
@@ -271,6 +270,7 @@ class Angel extends Visitor{
 
     onHitboxHover() {
         this.hoveredMS++;
+        this.activeSeconds = 0;
 
         console.debug("[angel] hovered ms: " + this.hoveredMS);
 
@@ -472,16 +472,19 @@ class Reanimation extends Visitor {
     constructor() {
         super("reanimation");
 
-        // -- movement and AI
-
         // -- Sounds
-
-        // -- mechanics
+        this.effectAudio = new Asset.audio("audio/reanimation effect.mp3");
+        this.deathAudio = new Asset.audio("audio/reanimation death.mp3");
+        this.moveAudio = new Asset.audio("audio/reanimation move.mp3");
     }
 
-    onSpawn() {}
+    onSpawn() {
+        new TimeManager().setTimeout(this.despawn.bind(this), 120000);
+    }
 
-    onDeath() {}
+    onDeath() {
+        this.deathAudio.play();
+    }
 
     onMove() {
         // get rooms around this one
@@ -489,10 +492,14 @@ class Reanimation extends Visitor {
 
         // check for player
         if (rooms.includes(getCurrentRoom())) {
+            this.effectAudio.play();
             const original = {x: position.x, y: position.y};
             new TimeManager().setInterval(() => {
+                // --- check how much the cursor moved and if it moved too much kill
+                if (!_between(position.x, original.x - 150, original.x + 150)) { this.kill(); }
 
-            });
+                if (!_between(position.y, original.y - 150, original.y + 150)) { this.kill(); }
+            }, 1000, { maxRuns: 6 });
         }
 
         drawCanvas();
