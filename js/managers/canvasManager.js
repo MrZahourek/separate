@@ -25,10 +25,6 @@ export async function drawCanvas() {
 
     // draw visitors
     for (const visitor of getCurrentRoom().occupiedBy) {
-        if (visitor.onSameRoom()) {
-            visitor.onSameRoom();
-        }
-
         const size = VISITOR_IMAGE_DESIRED_SIZE[visitor.name];
         const scaleW = size.width / HITBOX_ORIGINAL_SCREEN[visitor.name].width;
         const scaleH = size.height / HITBOX_ORIGINAL_SCREEN[visitor.name].height;

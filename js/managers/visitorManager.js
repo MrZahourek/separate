@@ -125,9 +125,7 @@ class Visitor {
 
             if (this.activeSeconds > (10 - this.moveAI.cur) + _rand(0, 15) - this.fails) {
                 // pick possible rooms
-                console.debug(`[${this.name}] is about to move from ${JSON.stringify(this.inRoom)}`);
                 const possibleRooms = this.inRoom.roomsAround;
-                console.debug(`${this.name} moving to rooms: ${possibleRooms}`);
                 const pickedIndex = _rand(0, possibleRooms.length);
 
                 if (pickedIndex === possibleRooms.length) {
@@ -145,11 +143,23 @@ class Visitor {
                     let rooms = [];
                     let weights = [];
 
-                    for (let i = 0; i < possibleRooms.length; i++) {
-                        if (allRooms.get(possibleRooms[i]).occupiedBy.includes(allVisitors.get("doorman")) || allRooms.get(possibleRooms[i]).occupiedBy.includes(allVisitors.get("hunter"))) { break; }
+                    console.warn(possibleRooms);
 
-                        rooms.push(allRooms.get(possibleRooms[i]));
-                        weights.push(allRooms.get(possibleRooms[i]).sound);
+                    if (rooms.length !== weights.length) {
+                        console.error("rooms vs weights length mismatch", rooms, weights);
+                    }
+
+
+                    for (let i = 0; i < possibleRooms.length; i++) {
+                        if (possibleRooms[i] === undefined) { continue; }
+
+                        const doorman   = allVisitors.get("doorman");
+                        const hunter    = allVisitors.get("hunter");
+                        const occupied  = possibleRooms[i].occupiedBy || [];
+
+                        if (doorman && occupied.includes(doorman) || hunter  && occupied.includes(hunter)) { continue; }
+                        rooms.push(allRooms.get(possibleRooms[i].name));
+                        weights.push(allRooms.get(possibleRooms[i].name).sound);
 
                         if (pickedIndex === i) {
                             weights[i] += 15;
@@ -217,6 +227,9 @@ class Angel extends Visitor{
 
     onMove() {
         this.moveAudio.play();
+
+        if (this.killTimer) { clearTimeout(this.killTimer); }
+        drawCanvas();
     }
 
     onDeath() {
@@ -240,6 +253,7 @@ class Angel extends Visitor{
     }
 
     onSameRoom() {
+        
         this._startKillTimer();
         //this.effect.enable();
 
@@ -260,12 +274,13 @@ class Angel extends Visitor{
 
         console.debug("[angel] hovered ms: " + this.hoveredMS);
 
-        if (this.hoveredMS >= 15) {
+        if (this.hoveredMS >= 250) {
             this.hoveredTimes++;
 
             if (this.hoveredTimes <= 2) {
                 this.effectAudio.audio.volume = 0.25;
                 this.effectAudio.play();
+                this.onSameRoom();
                 drawCanvas();
             }
             else {
@@ -377,6 +392,7 @@ class Hollow extends Visitor{
     onMove() {
         this.moveAudio.play();
         this.killTimer = null;
+        drawCanvas();
     }
 
     _startKillTimer() {
@@ -413,12 +429,27 @@ class Hollow extends Visitor{
                     }
                 }
                 else {
+
                     let max = possibleRooms[0];
 
                     for (let i = 0; i < possibleRooms.length; i++) {
+                        if (possibleRooms[i] === undefined) { continue; }
+
+                        const doorman   = allVisitors.get("doorman");
+                        const hunter    = allVisitors.get("hunter");
+                        const occupied  = possibleRooms[i].occupiedBy || [];
+
+                        if (doorman && occupied.includes(doorman) || hunter  && occupied.includes(hunter)) { continue; }
+
+
                         if (max.sound < possibleRooms[i].sound) {
                             max = possibleRooms;
                         }
+                    }
+
+                    if (max === undefined) {
+                        this.activeSeconds = 0;
+                        return;
                     }
 
                     console.warn(`picked room = ${max.name}`);
@@ -461,8 +492,10 @@ class Reanimation extends Visitor {
             const original = {x: position.x, y: position.y};
             new TimeManager().setInterval(() => {
 
-            })
+            });
         }
+
+        drawCanvas();
     }
 
 }

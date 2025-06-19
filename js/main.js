@@ -13,7 +13,28 @@ import {_getTicks, activeIntervals, TimeManager} from "./managers/timeManager.js
 import {ROOMS_AROUND} from "./res/doorData.js";
 
 document.addEventListener("DOMContentLoaded", async () => {
-    // 1) rooms
+
+    // 1) visitors
+    // declare visitors
+    allVisitors.set("angel", new Visitor.angel())
+    //allVisitors.set("doorman", new Visitor.doorman());
+    //allVisitors.set("hunter", new Visitor.hunter());
+    allVisitors.set("hollow", new Visitor.hollow());
+    allVisitors.set("horde", new Visitor.horde());
+    await allVisitors.set("warlock", new Visitor.warlock());
+    allVisitors.set("reanimation", new Visitor.reanimation());
+
+    for (const visitor of allVisitors.values()) {
+        await visitor.visitorImg.load()
+            .then(() => {
+                console.debug(`[${visitor.name}] asset loaded`);
+            });
+
+        inactiveVisitors.push(visitor);
+        setInterval(() => {visitor.AI.bind(visitor)}, _getTicks(1));
+    }
+
+    // 2) rooms
     const roomName = new Set(["hall 1", "bathroom", "living room", "kitchen", "hall 2", "office", "master bedroom", "kid bedroom"]);
     for ( let name of roomName ) {
         // set rooms
@@ -41,25 +62,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     setCurrentRoom( allRooms.get("office") );
-    // 2) visitors
-    // declare visitors
-    allVisitors.set("angel", new Visitor.angel())
-    allVisitors.set("doorman", new Visitor.doorman());
-    allVisitors.set("hunter", new Visitor.hunter());
-    allVisitors.set("hollow", new Visitor.hollow());
-    allVisitors.set("horde", new Visitor.horde());
-    await allVisitors.set("warlock", new Visitor.warlock());
-    allVisitors.set("reanimation", new Visitor.reanimation());
-
-    for (const visitor of allVisitors.values()) {
-        await visitor.visitorImg.load()
-            .then(() => {
-                console.debug(`[${visitor.name}] asset loaded`);
-            });
-
-        inactiveVisitors.push(visitor);
-        setInterval(() => {visitor.AI.bind(visitor)}, _getTicks(1));
-    }
 
 
     // 3) canvas setup

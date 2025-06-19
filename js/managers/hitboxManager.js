@@ -182,6 +182,12 @@ export function clickHandler(e) {
                 allVisitors.get("angel").hoveredTimes = 0;
                 allVisitors.get("angel").hoveredMS = 0;
             }
+
+            for (const visitor of getCurrentRoom().occupiedBy) {
+                if (visitor.onSameRoom()) {
+                    visitor.onSameRoom();
+                }
+            }
         }
     }
 
